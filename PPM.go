@@ -10,8 +10,8 @@ import (
 
 // ReadPPM reads a PPM image from a file and returns a struct that represents the image.
 func ReadPPM(filename string) (*PPM, error) {
+
 	ppm := PPM{}
-	pixel := Pixel{}
 	file, err := os.Open(filename)
 	if err != nil {
 		return nil, err
@@ -19,10 +19,10 @@ func ReadPPM(filename string) (*PPM, error) {
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
-	//var data []Pixel
 	var width, height, max int
 	var magicnumber string
-	//data = make([]Pixel, height)
+	j := 0
+	dataCreated := false
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -53,32 +53,45 @@ func ReadPPM(filename string) (*PPM, error) {
 			}
 			continue
 		}
+		CurrentLine := strings.Split(scanner.Text(), " ")
 
-		for i := 0; i < height; i++ {
-			for j := 0; j < width; j += 3 {
-				// Take data
-				//lineData := make([]Pixel, width)
-
-				var byteCase []int
-				strCase := strings.Fields(line)
-
-				for k := 0; k < width; k++ {
-					temp, _ := strconv.Atoi(strCase[k])
-					byteCase = append(byteCase, temp) //recup en 3/3
-				}
-
-				for l := 0; l < 3; l++ {
-				 	ppm.data[i].R =
-				}
-
-				if len(strCase) < width {
-					break
-				}
+		if height != 0 && width != 0 && dataCreated == false {
+			ppm.data = make([][]Pixel, height)
+			for k := range ppm.data {
+				ppm.data[k] = make([]Pixel, width)
 			}
+			dataCreated = true
 		}
+		compt := 0
+		for i := 0; i < width; i++ {
+			pixel := Pixel{}
+			nb, err := strconv.Atoi(CurrentLine[compt])
+			if err != nil {
+				fmt.Println(err)
+			}
+			pixel.R = uint8(nb)
+			compt++
+
+			nb, err = strconv.Atoi(CurrentLine[compt])
+			if err != nil {
+				fmt.Println(err)
+			}
+			pixel.G = uint8(nb)
+			compt++
+
+			nb, err = strconv.Atoi(CurrentLine[compt])
+			if err != nil {
+				fmt.Println(err)
+			}
+			pixel.B = uint8(nb)
+			compt++
+
+			ppm.data[j][i] = pixel
+		}
+		j++
 	}
 
-	return &PPM{}, nil
+	return &PPM{ppm.data, width, height, magicnumber, max}, nil
 }
 
 func (pp *PPM) PrintData() {
