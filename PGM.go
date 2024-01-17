@@ -134,6 +134,12 @@ func (pgm *PGM) SetMagicNumber(magicNumber string) {
 }
 
 func (pgm *PGM) SetMaxValue(maxValue uint8) {
+
+	for i := 0; i < pgm.height; i++ {
+		for j := 0; j < pgm.width; j++ {
+			pgm.data[i][j] = uint8(float64(pgm.data[i][j]) * float64(maxValue) / float64(pgm.max))
+		}
+	}
 	pgm.max = int(maxValue)
 }
 

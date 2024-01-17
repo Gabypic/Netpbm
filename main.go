@@ -28,25 +28,27 @@ type Pixel struct {
 }
 
 func main() {
-	//pbm, err := ReadPBM("test.txt")
-	//if err != nil {
-	//	fmt.Println("Error:", err)
-	//	return
-	//}
-	//pgm, err := ReadPGM("PGM.txt")
-	//if err != nil {
-	//	fmt.Println("Error : ", err)
-	//	return
-	//}
+	pbm, err := ReadPBM("test.txt")
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	pgm, err := ReadPGM("PGM.txt")
+	if err != nil {
+		fmt.Println("Error : ", err)
+		return
+	}
 	ppm, err := ReadPPM("PPM.txt")
 	if err != nil {
 		fmt.Println("Error : ", err)
 		return
 	}
 
-	//pbm.PrintData()
-	//pbm.Save("save.PBM")
-	//pgm.PrintData()
-	//pgm.Save("save.PGM")
+	pbm.PrintData()
+	pbm.Save("save.PBM")
+	pgm.PrintData()
+	pgm.SetMaxValue(11)
+	pgm.PrintData()
+	pgm.Save("save.PGM")
 	ppm.PrintData()
 }

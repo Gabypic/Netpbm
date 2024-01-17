@@ -4,5 +4,5 @@ P2
 3 2
 # This is a third comment.
 255
-0 255 0
+0 128 0
 255 0 255
