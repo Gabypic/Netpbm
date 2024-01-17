@@ -94,6 +94,100 @@ func ReadPPM(filename string) (*PPM, error) {
 	return &PPM{ppm.data, width, height, magicnumber, max}, nil
 }
 
+func (ppm *PPM) Size() (int, int) {
+	return ppm.width, ppm.height
+}
+
+func (ppm *PPM) At(x, y int) Pixel {
+	return ppm.data[y][x]
+}
+
+func (ppm *PPM) Set(x, y int, R, G, B uint8) {
+	ppm.data[y][x].R = R
+	ppm.data[y][x].G = G
+	ppm.data[y][x].B = B
+}
+
+func (ppm *PPM) Save(filename string) error {
+	file, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	writer := bufio.NewWriter(file)
+
+	fmt.Fprintf(writer, "%s\n%d %d\n%d\n", ppm.magicNumber, ppm.width, ppm.height, ppm.max)
+
+	// Write pixel data
+	for _, row := range ppm.data {
+		for _, value := range row {
+			fmt.Fprintf(writer, "%d ", value.R)
+			fmt.Fprintf(writer, "%d ", value.G)
+			fmt.Fprintf(writer, "%d ", value.B)
+		}
+		fmt.Fprintln(writer)
+	}
+
+	return writer.Flush()
+}
+
+func (ppm *PPM) Invert() {
+	for i := range ppm.data {
+		for j := range ppm.data[i] {
+			ppm.data[i][j].R = uint8(ppm.max) - ppm.data[i][j].R
+			ppm.data[i][j].G = uint8(ppm.max) - ppm.data[i][j].G
+			ppm.data[i][j].B = uint8(ppm.max) - ppm.data[i][j].B
+		}
+	}
+}
+
+func (ppm *PPM) Flip() {
+	for i := range ppm.data {
+		for j, k := 0, ppm.width-1; j < k; j, k = j+1, k-1 {
+			ppm.data[i][j], ppm.data[i][k] = ppm.data[i][k], ppm.data[i][j]
+		}
+	}
+}
+
+func (ppm *PPM) Flop() {
+	for i, j := 0, ppm.height-1; i < j; i, j = i+1, j-1 {
+		ppm.data[i], ppm.data[j] = ppm.data[j], ppm.data[i]
+	}
+}
+
+func (ppm *PPM) SetMagicNumber(magicNumber string) {
+	ppm.magicNumber = magicNumber
+}
+
+func (ppm *PPM) SetMaxValue(maxValue uint8) {
+
+	for i := 0; i < ppm.height; i++ {
+		for j := 0; j < ppm.width; j++ {
+			ppm.data[i][j].R = uint8(float64(ppm.data[i][j].R) * float64(maxValue) / float64(ppm.max))
+			ppm.data[i][j].G = uint8(float64(ppm.data[i][j].G) * float64(maxValue) / float64(ppm.max))
+			ppm.data[i][j].B = uint8(float64(ppm.data[i][j].B) * float64(maxValue) / float64(ppm.max))
+		}
+	}
+	ppm.max = int(maxValue)
+}
+
+func (ppm *PPM) Rotate90CW() {
+	rotatedData := make([][]Pixel, ppm.width)
+	for i := range rotatedData {
+		rotatedData[i] = make([]Pixel, ppm.height)
+	}
+
+	for i := range ppm.data {
+		for j := range ppm.data[i] {
+			rotatedData[j][ppm.height-i-1] = ppm.data[i][j]
+		}
+	}
+
+	ppm.data = rotatedData
+	ppm.width, ppm.height = ppm.height, ppm.width
+}
+
 func (pp *PPM) PrintData() {
 	fmt.Printf("Magic Number: %s\n", pp.magicNumber)
 	fmt.Printf("Width: %d\n", pp.width)

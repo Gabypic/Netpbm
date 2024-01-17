@@ -47,8 +47,7 @@ func main() {
 	pbm.PrintData()
 	pbm.Save("save.PBM")
 	pgm.PrintData()
-	pgm.SetMaxValue(11)
-	pgm.PrintData()
 	pgm.Save("save.PGM")
 	ppm.PrintData()
+	ppm.Save("save.PPM")
 }
