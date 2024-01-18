@@ -19,7 +19,8 @@ func ReadPPM(filename string) (*PPM, error) {
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
-	var width, height, max int
+	var width, height int
+	var max uint8
 	var magicnumber string
 	j := 0
 	dataCreated := false
@@ -169,7 +170,7 @@ func (ppm *PPM) SetMaxValue(maxValue uint8) {
 			ppm.data[i][j].B = uint8(float64(ppm.data[i][j].B) * float64(maxValue) / float64(ppm.max))
 		}
 	}
-	ppm.max = int(maxValue)
+	ppm.max = maxValue
 }
 
 func (ppm *PPM) Rotate90CW() {

@@ -17,7 +17,8 @@ func ReadPGM(filename string) (*PGM, error) {
 
 	scanner := bufio.NewScanner(file)
 	var data [][]uint8
-	var width, height, max int
+	var width, height int
+	var max uint8
 	var magicnumber string
 	data = make([][]uint8, height)
 
@@ -140,7 +141,7 @@ func (pgm *PGM) SetMaxValue(maxValue uint8) {
 			pgm.data[i][j] = uint8(float64(pgm.data[i][j]) * float64(maxValue) / float64(pgm.max))
 		}
 	}
-	pgm.max = int(maxValue)
+	pgm.max = maxValue
 }
 
 func (pgm *PGM) Rotate90CW() {
