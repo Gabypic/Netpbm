@@ -50,4 +50,5 @@ func main() {
 	pgm.Save("save.PGM")
 	ppm.PrintData()
 	ppm.Save("save.PPM")
+	//fmt.Println('ง')
 }

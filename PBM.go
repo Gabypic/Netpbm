@@ -44,30 +44,40 @@ func ReadPBM(filename string) (*PBM, error) {
 			continue
 		}
 
-		// Take binary data
-		var rowData []bool
-		for _, char := range line {
-			if char == '1' {
-				rowData = append(rowData, true)
-			} else if char == '0' {
-				rowData = append(rowData, false)
+		if magicnumber == "P1" {
+			// Take binary data
+			var rowData []bool
+			for _, char := range line {
+				if char == '1' {
+					rowData = append(rowData, true)
+				} else if char == '0' {
+					rowData = append(rowData, false)
+				}
+			}
+
+			// Ajouter rowData à data
+			data[i] = rowData
+			i++
+
+			// compile
+			if len(row) == width*8 {
+				fmt.Println("compile")
+				data = append(data, row)
+				row = []bool{}
+			}
+		}
+		if err := scanner.Err(); err != nil {
+			fmt.Println("error")
+			return nil, err
+		}
+
+		if magicnumber == "P4" {
+			for _, char := range line {
+				fmt.Printf("%08b \n", char)
+
 			}
 		}
 
-		// Ajouter rowData à data
-		data[i] = rowData
-		i++
-
-		// compile
-		if len(row) == width*8 {
-			fmt.Println("compile")
-			data = append(data, row)
-			row = []bool{}
-		}
-	}
-	if err := scanner.Err(); err != nil {
-		fmt.Println("error")
-		return nil, err
 	}
 	return &PBM{data, width, height, magicnumber}, nil
 }
