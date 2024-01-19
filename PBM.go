@@ -1,4 +1,4 @@
-package main
+package Netpbm
 
 import (
 	"bufio"
@@ -6,6 +6,12 @@ import (
 	"os"
 	"strings"
 )
+
+type PBM struct {
+	data          [][]bool
+	width, height int
+	magicNumber   string
+}
 
 func ReadPBM(filename string) (*PBM, error) {
 	file, err := os.Open(filename)
@@ -41,6 +47,7 @@ func ReadPBM(filename string) (*PBM, error) {
 				return nil, err
 			}
 			data = make([][]bool, height)
+			fmt.Println(data)
 			continue
 		}
 
@@ -67,19 +74,60 @@ func ReadPBM(filename string) (*PBM, error) {
 			}
 		}
 		if err := scanner.Err(); err != nil {
-			fmt.Println("error")
+			fmt.Println("error", err)
 			return nil, err
 		}
 
 		if magicnumber == "P4" {
-			for _, char := range line {
-				fmt.Printf("%08b \n", char)
+			var char int32
+			var rowdata []bool
+			for j := 0; j < width*2; j++ {
+				if len(rowdata) == width {
+					data[i] = rowdata
+					i++
+					for l := 0; l < len(rowdata); l++ {
+						rowdata = []bool{}
+					}
+				}
+				fmt.Printf("j %d\n", j)
+				char = int32(line[j])
+				fmt.Printf("char %d\n", char)
+				binary := fmt.Sprintf("%08b", char)
+				fmt.Println(binary)
+				booled := tobool(binary)
+				for k := 0; k < len(binary); k++ {
+					rowdata = append(rowdata, booled[k])
+					if len(rowdata) == width {
+						k = len(binary)
+					}
+				}
+				fmt.Println(rowdata)
 
 			}
+			if len(rowdata) == width {
+				data[i] = rowdata
+				i++
+				for l := 0; l < len(rowdata); l++ {
+					rowdata = []bool{}
+				}
+			}
 		}
-
 	}
+	//fmt.Println(data)
 	return &PBM{data, width, height, magicnumber}, nil
+}
+
+func tobool(tab string) []bool {
+	var rowData []bool
+	for _, char := range tab {
+		if char == '1' {
+			rowData = append(rowData, true)
+		} else if char == '0' {
+			rowData = append(rowData, false)
+		}
+	}
+	//fmt.Println(rowData)
+	return rowData
 }
 
 func (p *PBM) PrintData() {

@@ -1,3 +1,3 @@
-module github.com/Gabypic/Netpbm
+module Netpbm
 
 go 1.21.0

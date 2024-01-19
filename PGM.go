@@ -1,4 +1,4 @@
-package main
+package Netpbm
 
 import (
 	"bufio"
@@ -7,6 +7,13 @@ import (
 	"strconv"
 	"strings"
 )
+
+type PGM struct {
+	data          [][]uint8
+	width, height int
+	magicNumber   string
+	max           uint8
+}
 
 func ReadPGM(filename string) (*PGM, error) {
 	file, err := os.Open(filename)

@@ -1,4 +1,4 @@
-package main
+package Netpbm
 
 import (
 	"bufio"
@@ -7,6 +7,17 @@ import (
 	"strconv"
 	"strings"
 )
+
+type PPM struct {
+	data          [][]Pixel
+	width, height int
+	magicNumber   string
+	max           uint8
+}
+
+type Pixel struct {
+	R, G, B uint8
+}
 
 // ReadPPM reads a PPM image from a file and returns a struct that represents the image.
 func ReadPPM(filename string) (*PPM, error) {
@@ -103,10 +114,8 @@ func (ppm *PPM) At(x, y int) Pixel {
 	return ppm.data[y][x]
 }
 
-func (ppm *PPM) Set(x, y int, R, G, B uint8) {
-	ppm.data[y][x].R = R
-	ppm.data[y][x].G = G
-	ppm.data[y][x].B = B
+func (ppm *PPM) Set(x, y int, value Pixel) {
+	ppm.data[y][x] = value
 }
 
 func (ppm *PPM) Save(filename string) error {
